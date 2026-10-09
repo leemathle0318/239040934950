@@ -255,7 +255,33 @@
     [stack addArrangedSubview:self.tipLabel];
     [stack addArrangedSubview:[self button:@"复制最近日志" selector:@selector(copyLog) solid:NO]];
     [stack addArrangedSubview:[self button:@"关闭面板" selector:@selector(closePanel) solid:NO]];
-    self.previousKeyWindow = [UIApplication sharedApplication].keyWindow;
+  
+self.previousKeyWindow = nil;
+
+for (UIScene *scene in
+     [UIApplication sharedApplication].connectedScenes) {
+
+    if (![scene isKindOfClass:[UIWindowScene class]] ||
+        scene.activationState !=
+        UISceneActivationStateForegroundActive) {
+        continue;
+    }
+
+    UIWindowScene *windowScene = (UIWindowScene *)scene;
+
+    for (UIWindow *window in windowScene.windows) {
+        if (window.isKeyWindow &&
+            window != self.panelWindow &&
+            window != self.bubbleWindow) {
+
+            self.previousKeyWindow = window;
+            break;
+        }
+    }
+
+    if (self.previousKeyWindow) break;
+}
+
     [self.panelWindow makeKeyAndVisible];
     self.bubbleWindow.hidden = YES;
     [self refreshStatus];
